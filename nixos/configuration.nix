@@ -51,18 +51,19 @@
     pulse.enable = true;
   };
 
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-
   # User
   users.users.jeroen = {
     isNormalUser = true;
     extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [
-      nixpkgs-fmt
-      git
-      google-chrome
-    ];
+  };
+
+  # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
+
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    users.jeroen = import ../home-manager/home.nix;
   };
 
   # System packages
@@ -76,8 +77,14 @@
     EDITOR = "vim";
   };
 
-  # Enable flakes
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings = {
+    # Enable flakes
+    experimental-features = [ "nix-command" "flakes" ];
+
+    # Quick fix: relative paths
+    # Workaround for https://github.com/NixOS/nix/issues/9574
+    nix-path = config.nix.nixPath;
+  };
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
