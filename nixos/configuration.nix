@@ -37,8 +37,13 @@
     keyMap = "us";
   };
 
-  # Just tty
+  # Plasma
   services.xserver.enable = false;
+  services.displayManager.sddm = {
+    enable = true;
+    wayland.enable = true;
+  };
+  services.desktopManager.plasma6.enable = true;
 
   # Sound
   services.pipewire = {
@@ -46,15 +51,22 @@
     pulse.enable = true;
   };
 
+  # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
+
   # User
   users.users.jeroen = {
     isNormalUser = true;
     extraGroups = [ "networkmanager" "wheel" ];
+    packages = with pkgs; [
+      nixpkgs-fmt
+      git
+      google-chrome
+    ];
   };
 
   # System packages
   environment.systemPackages = with pkgs; [
-    git
     vim
     wget
   ];
